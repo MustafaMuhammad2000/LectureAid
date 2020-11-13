@@ -24,7 +24,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 from tkinter import filedialog
 
-
+print("Loading up application... (may take up to 30 seconds)")
 filepath = ""
 top = tk.Tk()
 top.title("LectureAid")
@@ -67,7 +67,7 @@ fileButton.pack(side=tk.TOP)
 
 
 def SpeechToText():
-    SetLogLevel(0)
+    SetLogLevel(-1)
     if not os.path.exists("model"):
         print(
             "Please download the model from https://alphacephei.com/vosk/models and unpack as 'model' in the current folder.")
@@ -79,7 +79,6 @@ def SpeechToText():
     R2.pack_forget()
     R3.pack_forget()
     global filepath
-    print(filepath)
 
     total = AudioSegment.from_file(filepath)
     total = total.set_frame_rate(16000)
@@ -109,7 +108,6 @@ def SpeechToText():
             break
         if rec.AcceptWaveform(data):
             i += 1
-            print(rec.Result())
             result = json.loads(rec.Result())
             if len(result['text']) > 0:
                 if i % 5 == 0 and i % 10 != 0:
@@ -122,37 +120,23 @@ def SpeechToText():
                     allText += result['text'] + '. '
                     toSummary += result['text'] + '. '
                 percent = (result['result'][len(result['result']) - 1]['end']) / (len(total) / 1000) * 100
-                # print(percent)
                 percentLabel['text'] = "% Converted: " + "{:.2f}".format(percent)
-                # print(result['result'][len(result['result'])-1]['end'])
 
-    print("This is the final result")
-    print(rec.FinalResult())
-    print(allText)
-
-    tool = language_tool_python.LanguageTool('en-US')
-    matches = tool.check(allText)
-    matches2 = tool.check(toSummary)
-    print(matches)
-    goodText = tool.correct(allText)
-    goodSummary = tool.correct(toSummary)
-    print(goodText)
 
     totalTimeLabel.destroy()
     percentLabel.destroy()
 
     global var
-    print("Value of choice is: "+str(var.get()))
     if var.get() == 0 or var.get() == 1:
-        completed(goodText)
+        completed(allText)
     elif var.get() == 2:
-        temp2 = Sum.Summarizer(goodSummary)
+        temp2 = Sum.Summarizer(toSummary)
         summarizedText = temp2.summarize()
         completed(summarizedText)
     elif var.get() == 3:
-        temp2 = Sum.Summarizer(goodSummary)
+        temp2 = Sum.Summarizer(toSummary)
         summarizedText = temp2.summarize()
-        completed(goodText+"\n"+summarizedText)
+        completed(allText+"\n"+summarizedText)
 
 
 def start():
@@ -174,7 +158,6 @@ def popup_bonus():
 
 
 def save_as(text):
-    print(type(text))
     text_file = filedialog.asksaveasfilename(defaultextension=".pdf", initialdir="/", title="Save File", filetypes=(("PDF file", "*.pdf"), ("Word File", "*.docx"), ("Text file","*.txt")))
 
     if text_file:
@@ -237,7 +220,7 @@ def completed(text):
 
 
 
-madeByLabel = tk.Label(top, text="Made by Mustafa Muhammad and Adam Ding", foreground='white', background='#242320')
+madeByLabel = tk.Label(top, text="Created by Mustafa Muhammad", foreground='white', background='#242320')
 madeByLabel.place(relx=0.5, rely=0.98, anchor=tk.CENTER)
 titleLabel = tk.Label(top, text="LectureAid",foreground='#3bb6e3', background='#242320', font=('Arial', 25))
 titleLabel.place(relx=0.5,rely=0.05,anchor=tk.CENTER)

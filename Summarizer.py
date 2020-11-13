@@ -115,7 +115,6 @@ def find_top_sentences(sentenceValue) -> int:
     values = list(sentenceValue.values())
     index = 0.6*(len(values)-1)
     index = round(index)
-    print(values[index])
 
     return values[index]
 
@@ -183,7 +182,5 @@ class Summarizer:
 
         # 9 Important Algorithm: Generate the summary
         summary = generate_summary(sentences, sentence_scores, threshold)
-        print("Summary is here:")
-        print(summary)
         summary = "Summary: \n"+summary
         return summary
